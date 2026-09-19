@@ -1,0 +1,4 @@
+{
+  "endpoint": "/formbee/email-only",
+  "healthEndpoint": "/formbee/health"
+}

@@ -1,0 +1,16 @@
+# Credentials and local dependencies
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+__pycache__/
+*.pyc
+
+# Local exports, scratch files and development-only previews
+*.zip
+tmp/
+outputs/
+backend/preview-test.mjs
+
+# The deployable public pages in docs/ are intentionally tracked.
