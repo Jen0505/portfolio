@@ -4,10 +4,10 @@ Updated 27 September 2026. The website uses Jen’s warm glass palette, system s
 
 - Website: https://jenportfolio.online/
 - Contact: https://jenportfolio.online/contact.html
-- **12-slide HTML application:** https://jenportfolio.online/presentations/enigma.html
+- **13-slide HTML application:** https://jenportfolio.online/presentations/enigma.html
 - **Earlier 4-slide editable PowerPoint:** [Enigma_Media_Application_Glass.pptx](presentations/Enigma_Media_Application_Glass.pptx)
 
-The HTML application includes portfolio imagery, case studies, a performance chart, notes and contact links. Open it in a browser; use arrows to navigate, F for fullscreen and E for text editing. The Save control downloads a standalone HTML copy with images and edits. The expanded HTML and the earlier four-slide PowerPoint are separate versions.
+The HTML application includes portfolio imagery, case studies, a dedicated Prevention Australia Beauty Awards 2025 slide, a performance chart, notes and contact links. Open it in a browser; use arrows to navigate, F for fullscreen and E for text editing. The Save control downloads a standalone HTML copy with images and edits. The expanded HTML and the earlier four-slide PowerPoint are separate versions.
 
 Run `python3 prepare-github-pages.py` after website source changes. This builds the glass theme and stages the website plus `presentations/` under `docs/`, preserving the existing custom domain. GitHub Pages continues to publish `main` / `docs`. The root copies also remain available for the existing static hosting integration.
 
