@@ -135,7 +135,51 @@ body .social-gallery .screen-button:hover .screen-zoom{background:#534b49}.scree
 @media(max-width:370px){body .recruiter-hero h1{font-size:42px;letter-spacing:-.045em}body .hero-role{font-size:18px!important}body .section-head h2{font-size:35px}body .contact h2{font-size:44px}body.contact-page h1{font-size:42px}body.contact-page h2{font-size:29px}body .services-cta .pill{font-size:11px;padding:11px 14px}.social-gallery .feed-meta{font-size:10px}.brand-names .blairsom{font-size:16px}}
 @media(prefers-contrast:more){.glass-header,.recruiter-portrait figcaption,.results,.contact-launcher,.contact-page header{background:var(--shadow-grey);backdrop-filter:none;border-color:var(--seashell)}body :is(.pill,.hero-contact,.filter,.copy-button,.plain-button,.menu-toggle,.screen-button){border-color:currentColor}}
 @media(prefers-reduced-motion:reduce){body :is(.pill,.hero-contact,.copy-button,.plain-button,.filter,.menu-toggle):active{transform:none}}
-</style></head>
+</style><meta name="jen-page-revision" content="1848122fe26c9104f592"><script>/* Check the current deployment without storing the version request in browser cache.
+   GitHub Pages controls its own HTTP cache headers; this is freshness checking,
+   not a replacement for Cache-Control: no-store at the hosting layer. */
+(() => {
+  if (!/^https?:$/.test(location.protocol)) return;
+  const revision = document.querySelector('meta[name="jen-page-revision"]')?.content;
+  if (!revision) return;
+  let busy = false;
+  async function checkLatest() {
+    if (busy || document.body?.classList.contains('editing') || window.jenHasUnsavedEdits) return;
+    busy = true;
+    try {
+      const page = new URL(location.href);
+      page.hash = '';
+      page.search = '';
+      if (page.pathname.endsWith('/')) page.pathname += 'index.html';
+      const manifest = new URL(page);
+      manifest.pathname += '.version.json';
+      manifest.searchParams.set('_fresh', Date.now().toString());
+      const options = { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(8000) };
+      const response = await fetch(manifest, options);
+      if (!response.ok) return;
+      const latest = await response.json();
+      if (!/^[a-f0-9]{20}$/.test(latest.revision) || latest.revision === revision) return;
+      page.searchParams.set('_fresh', latest.revision + '-' + Date.now());
+      const fresh = await fetch(page, { ...options, signal: AbortSignal.timeout(15000) });
+      if (!fresh.ok || !fresh.headers.get('content-type')?.includes('text/html')) return;
+      const html = await fresh.text();
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      if (parsed.querySelector('meta[name="jen-page-revision"]')?.content !== latest.revision) return;
+      if (document.body?.classList.contains('editing') || window.jenHasUnsavedEdits) return;
+      // Navigate to a versioned URL so scripts get a fresh document and the hash survives.
+      const destination = new URL(location.href);
+      if (destination.searchParams.get('v') === latest.revision) return;
+      destination.searchParams.set('v', latest.revision);
+      destination.searchParams.delete('_fresh');
+      location.replace(destination.href);
+    } catch { /* Keep the readable current page when offline or unavailable. */ }
+    finally { busy = false; }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', checkLatest, {once:true});
+  else checkLatest();
+  window.addEventListener('pageshow', event => { if (event.persisted) checkLatest(); });
+})();
+</script></head>
 <body class="portfolio-page">
 <a class="skip" href="#main">Skip to content</a>
 <header class="glass-header"><a class="wordmark" href="#hello" aria-label="Jen Sebastian home">jen<span>.</span></a><nav class="nav" aria-label="Main navigation"><button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navigation"><span></span><span></span></button><div class="nav-links" id="navigation"><a class="rail-link" href="#hello" aria-current="location">Hello</a><a class="rail-link" href="#work">Selected work</a><a class="rail-link" href="#services">Capabilities</a><a class="rail-link" href="#highlights">Highlights</a><a class="rail-link" href="#about">About</a><a class="rail-link" href="#contact">Connect</a></div><a class="nav-contact" href="contact.html">Let’s talk ↗</a></nav></header>

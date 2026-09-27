@@ -8,7 +8,7 @@ root = Path(__file__).resolve().parent
 subprocess.run([sys.executable, str(root / 'build.py')], cwd=root, check=True)
 public = root / 'docs'
 public.mkdir(exist_ok=True)
-for name in ('index.html', 'contact.html'):
+for name in ('index.html', 'contact.html', 'index.html.version.json', 'contact.html.version.json'):
     shutil.copy2(root / name, public / name)
 if (root / 'presentations').exists():
     shutil.copytree(root / 'presentations', public / 'presentations', dirs_exist_ok=True)

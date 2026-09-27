@@ -157,7 +157,51 @@ svg {
 @media(prefers-reduced-transparency:reduce){.glass{background:#373438;backdrop-filter:none}.deck-controls{background:#232327;backdrop-filter:none}}
 @supports not(backdrop-filter:blur(1px)){.glass{background:#373438}}
 @media print{@page{size:20in 11.25in;margin:0}.deck-controls,.progress-track,.edit-toggle,.edit-hotzone,.edit-hint,dialog,.toast{display:none!important}.slide{-webkit-print-color-adjust:exact;print-color-adjust:exact}.reveal{opacity:1!important;transform:none!important}.slide:last-child{break-after:auto}.print-link{display:block}.glass{backdrop-filter:none}}
-</style></head><body>
+</style><meta name="jen-page-revision" content="aa41cb6559a74471f0cc"><script>/* Check the current deployment without storing the version request in browser cache.
+   GitHub Pages controls its own HTTP cache headers; this is freshness checking,
+   not a replacement for Cache-Control: no-store at the hosting layer. */
+(() => {
+  if (!/^https?:$/.test(location.protocol)) return;
+  const revision = document.querySelector('meta[name="jen-page-revision"]')?.content;
+  if (!revision) return;
+  let busy = false;
+  async function checkLatest() {
+    if (busy || document.body?.classList.contains('editing') || window.jenHasUnsavedEdits) return;
+    busy = true;
+    try {
+      const page = new URL(location.href);
+      page.hash = '';
+      page.search = '';
+      if (page.pathname.endsWith('/')) page.pathname += 'index.html';
+      const manifest = new URL(page);
+      manifest.pathname += '.version.json';
+      manifest.searchParams.set('_fresh', Date.now().toString());
+      const options = { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(8000) };
+      const response = await fetch(manifest, options);
+      if (!response.ok) return;
+      const latest = await response.json();
+      if (!/^[a-f0-9]{20}$/.test(latest.revision) || latest.revision === revision) return;
+      page.searchParams.set('_fresh', latest.revision + '-' + Date.now());
+      const fresh = await fetch(page, { ...options, signal: AbortSignal.timeout(15000) });
+      if (!fresh.ok || !fresh.headers.get('content-type')?.includes('text/html')) return;
+      const html = await fresh.text();
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      if (parsed.querySelector('meta[name="jen-page-revision"]')?.content !== latest.revision) return;
+      if (document.body?.classList.contains('editing') || window.jenHasUnsavedEdits) return;
+      // Navigate to a versioned URL so scripts get a fresh document and the hash survives.
+      const destination = new URL(location.href);
+      if (destination.searchParams.get('v') === latest.revision) return;
+      destination.searchParams.set('v', latest.revision);
+      destination.searchParams.delete('_fresh');
+      location.replace(destination.href);
+    } catch { /* Keep the readable current page when offline or unavailable. */ }
+    finally { busy = false; }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', checkLatest, {once:true});
+  else checkLatest();
+  window.addEventListener('pageshow', event => { if (event.persisted) checkLatest(); });
+})();
+</script></head><body>
 <div class="deck-viewport"><main class="deck-stage" id="deckStage" aria-label="Enigma application presentation">
 <!-- === 01 COVER === -->
 <section class="slide cover active" data-title="Introduction">
@@ -193,13 +237,13 @@ svg {
 </main></div>
 <!-- === NAVIGATION, NOTES, AND OFFLINE EDITING === -->
 <nav class="deck-controls" aria-label="Presentation controls"><button class="arrow" id="prev" aria-label="Previous slide" title="Previous (Left arrow)">‹</button><span id="counter" aria-live="polite"></span><button class="arrow" id="next" aria-label="Next slide" title="Next (Right arrow)">›</button><span class="ui-divider"></span><select id="jump" aria-label="Jump to slide"></select><button id="overviewButton" title="Slide overview (O)">Slides</button><button id="notesButton" title="Speaker notes (N)">Notes</button><button id="fullButton" title="Fullscreen (F)">⛶</button><button id="printButton" class="secondary-control" title="Print or save as PDF">Print</button><button id="saveButton" class="secondary-control" title="Download this HTML presentation">Save</button></nav><div class="progress-track"><div class="progress-fill" id="progress"></div></div>
-<div class="edit-hotzone" aria-hidden="true"></div><button class="edit-toggle" id="editToggle" aria-pressed="false" title="Edit slide text (E)">Edit text</button><div class="edit-hint">Click text to edit · Saved in this browser · Save downloads HTML</div><div class="toast" role="status" id="toast"></div>
+<div class="edit-hotzone" aria-hidden="true"></div><button class="edit-toggle" id="editToggle" aria-pressed="false" title="Edit slide text (E)">Edit text</button><div class="edit-hint">Edits last until reload · Use Save to download your changes</div><div class="toast" role="status" id="toast"></div>
 <dialog id="overview"><button class="dialog-close" aria-label="Close slide overview">×</button><h2>Slide overview</h2><div class="overview-grid" id="overviewGrid"></div></dialog><dialog id="notes"><button class="dialog-close" aria-label="Close speaker notes">×</button><h2 id="notesTitle">Speaker notes</h2><p id="notesText"></p></dialog><dialog id="imageDialog"><button class="dialog-close" aria-label="Close image">×</button><img id="fullImage" alt=""><p id="imageCaption"></p></dialog>
 <script>
 /* === CONTROLLER: FIXED STAGE, NAVIGATION AND ACCESSIBILITY === */
 class SlidePresentation{
- constructor(){this.slides=[...document.querySelectorAll('.slide')];this.stage=document.getElementById('deckStage');this.index=0;this.editing=false;this.storeKey='jen-enigma-html-v2-prevention';this.setupSlides();this.restore();this.bind();this.scale();this.show(this.hashIndex());}
- setupSlides(){this.slides.forEach((s,i)=>{s.id='slide-'+(i+1);s.setAttribute('role','group');s.setAttribute('aria-roledescription','slide');s.setAttribute('aria-label',`${i+1} of ${this.slides.length}: ${s.dataset.title}`);const foot=document.createElement('footer');foot.className='footer';foot.innerHTML=`<span>JEN SEBASTIAN</span><span>${String(i+1).padStart(2,'0')} / ${this.slides.length}</span>`;s.append(foot);document.getElementById('jump').add(new Option(`${String(i+1).padStart(2,'0')} · ${s.dataset.title}`,i));const b=document.createElement('button');b.innerHTML=`<span>${String(i+1).padStart(2,'0')}</span>${s.dataset.title}`;b.onclick=()=>{document.getElementById('overview').close();this.show(i)};document.getElementById('overviewGrid').append(b)});document.querySelectorAll('[data-edit]').forEach((el,i)=>{el.dataset.editId=i;el.addEventListener('input',()=>this.persist())});}
+ constructor(){this.slides=[...document.querySelectorAll('.slide')];this.stage=document.getElementById('deckStage');this.index=0;this.editing=false;this.setupSlides();this.clearLegacyEdits();this.bind();this.scale();this.show(this.hashIndex());}
+ setupSlides(){this.slides.forEach((s,i)=>{s.id='slide-'+(i+1);s.setAttribute('role','group');s.setAttribute('aria-roledescription','slide');s.setAttribute('aria-label',`${i+1} of ${this.slides.length}: ${s.dataset.title}`);const foot=document.createElement('footer');foot.className='footer';foot.innerHTML=`<span>JEN SEBASTIAN</span><span>${String(i+1).padStart(2,'0')} / ${this.slides.length}</span>`;s.append(foot);document.getElementById('jump').add(new Option(`${String(i+1).padStart(2,'0')} · ${s.dataset.title}`,i));const b=document.createElement('button');b.innerHTML=`<span>${String(i+1).padStart(2,'0')}</span>${s.dataset.title}`;b.onclick=()=>{document.getElementById('overview').close();this.show(i)};document.getElementById('overviewGrid').append(b)});document.querySelectorAll('[data-edit]').forEach((el,i)=>{el.dataset.editId=i;el.addEventListener('input',()=>{window.jenHasUnsavedEdits=true})});}
  hashIndex(){return Math.max(0,Math.min(this.slides.length-1,(parseInt(location.hash.replace('#slide-',''))||1)-1));}
  scale(){const factor=Math.min(innerWidth/1920,innerHeight/1080);this.stage.style.transform=`translate(${(innerWidth-1920*factor)/2}px,${(innerHeight-1080*factor)/2}px) scale(${factor})`;}
  show(index){this.index=Math.max(0,Math.min(index,this.slides.length-1));this.slides.forEach((s,i)=>{const active=i===this.index;s.classList.toggle('active',active);s.classList.toggle('visible',active);s.inert=!active;s.setAttribute('aria-hidden',String(!active))});document.getElementById('counter').textContent=`${this.index+1} / ${this.slides.length}`;document.getElementById('jump').value=this.index;document.getElementById('prev').disabled=this.index===0;document.getElementById('next').disabled=this.index===this.slides.length-1;document.getElementById('progress').style.width=`${(this.index+1)/this.slides.length*100}%`;document.querySelectorAll('#overviewGrid button').forEach((b,i)=>b.classList.toggle('current',i===this.index));try{history.replaceState(null,'',`#slide-${this.index+1}`)}catch{}document.title=`${this.index+1}. ${this.slides[this.index].dataset.title} | Jen Sebastian`;}
@@ -210,8 +254,7 @@ class SlidePresentation{
  notes(){document.getElementById('notesTitle').textContent=this.slides[this.index].dataset.title;document.getElementById('notesText').textContent=this.slides[this.index].querySelector('.speaker-notes').textContent;document.getElementById('notes').showModal();}
  async fullscreen(){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{this.toast('Fullscreen is unavailable here. Open the HTML in a browser.')}}
  edit(value=!this.editing){this.editing=value;document.body.classList.toggle('editing',value);document.getElementById('editToggle').classList.toggle('active',value);document.getElementById('editToggle').setAttribute('aria-pressed',value);document.getElementById('editToggle').textContent=value?'Finish editing':'Edit text';document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable=value?'true':'false');}
- persist(){const values={};document.querySelectorAll('[data-edit]').forEach(el=>values[el.dataset.editId]=el.innerHTML);try{localStorage.setItem(this.storeKey,JSON.stringify(values))}catch{this.toast('Use Save to keep your edits in a downloaded HTML file.')}}
- restore(){try{const values=JSON.parse(localStorage.getItem(this.storeKey)||'{}');document.querySelectorAll('[data-edit]').forEach(el=>{if(values[el.dataset.editId]!==undefined){const t=document.createElement('template');t.innerHTML=values[el.dataset.editId];t.content.querySelectorAll('script,iframe,object,embed').forEach(x=>x.remove());t.content.querySelectorAll('*').forEach(x=>[...x.attributes].forEach(a=>{if(a.name.startsWith('on')||['src','href','style'].includes(a.name))x.removeAttribute(a.name)}));el.innerHTML=t.innerHTML}})}catch{}}
+ clearLegacyEdits(){try{for(const key of ['jen-enigma-html-v1','jen-enigma-html-v2-prevention'])localStorage.removeItem(key)}catch{}}
  save(){const copy=document.documentElement.cloneNode(true);copy.querySelector('body').classList.remove('editing');copy.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));copy.querySelectorAll('.footer').forEach(el=>el.remove());copy.querySelector('#jump').innerHTML='';copy.querySelector('#overviewGrid').innerHTML='';copy.querySelectorAll('dialog').forEach(d=>d.removeAttribute('open'));copy.querySelector('#fullImage').removeAttribute('src');copy.querySelector('#editToggle').classList.remove('active','show');copy.querySelector('#editToggle').textContent='Edit text';copy.querySelector('#editToggle').setAttribute('aria-pressed','false');copy.querySelectorAll('.slide').forEach((s,i)=>{s.classList.toggle('active',i===0);s.classList.toggle('visible',i===0);s.removeAttribute('inert');s.removeAttribute('aria-hidden')});const url=URL.createObjectURL(new Blob(['<!DOCTYPE html>\n'+copy.outerHTML],{type:'text/html'}));const a=document.createElement('a');a.href=url;a.download='Jen-Sebastian-Enigma-Presentation.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);this.toast('HTML saved with images and your text edits.');}
  toast(message){const t=document.getElementById('toast');t.textContent=message;t.classList.add('show');clearTimeout(this.toastTimer);this.toastTimer=setTimeout(()=>t.classList.remove('show'),3200)}
 }

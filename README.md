@@ -7,11 +7,17 @@ Updated 27 September 2026. The website uses Jen’s warm glass palette, system s
 - **13-slide HTML application:** https://jenportfolio.online/presentations/enigma.html
 - **Earlier 4-slide editable PowerPoint:** [Enigma_Media_Application_Glass.pptx](presentations/Enigma_Media_Application_Glass.pptx)
 
-The HTML application includes portfolio imagery, case studies, a dedicated Prevention Australia Beauty Awards 2025 slide, a performance chart, notes and contact links. Open it in a browser; use arrows to navigate, F for fullscreen and E for text editing. The Save control downloads a standalone HTML copy with images and edits. The expanded HTML and the earlier four-slide PowerPoint are separate versions.
+The HTML application includes portfolio imagery, case studies, a dedicated Prevention Australia Beauty Awards 2025 slide, a performance chart, notes and contact links. Open it in a browser; use arrows to navigate, F for fullscreen and E for text editing. Edits stay in memory until reload; the presentation no longer saves text to browser storage. The Save control explicitly downloads a standalone HTML copy with images and edits. The expanded HTML and the earlier four-slide PowerPoint are separate versions.
 
 Run `python3 prepare-github-pages.py` after website source changes. This builds the glass theme and stages the website plus `presentations/` under `docs/`, preserving the existing custom domain. GitHub Pages continues to publish `main` / `docs`. The root copies also remain available for the existing static hosting integration.
 
 Online enquiry delivery still requires a configured email backend. Direct email, telephone, WhatsApp and LinkedIn links remain available.
+
+## Freshness and caching
+
+The presentation removes its two legacy localStorage edit keys and does not persist edits, session data or offline caches. Both website pages and the presentation check a small deployment-version manifest on load and browser history restoration using `fetch` with `cache: no-store` and a unique query. If a newer revision is available, the browser navigates to a verified newer version using a versioned URL. Unavailable networks keep the current page readable; active or unsaved editing is not interrupted.
+
+GitHub Pages currently sends `Cache-Control: max-age=600`. Source files cannot override that hosting-level policy; these checks reduce stale-page display but do not guarantee zero browser/CDN storage. The added `vercel.json` sets browser and CDN `no-store` policies for deployments that use Vercel. It does not change GitHub Pages headers or move the custom domain.
 
 The material below records the earlier portfolio setup and source context.
 

@@ -1,5 +1,6 @@
 from pathlib import Path
 import base64,re,mimetypes,zipfile,json
+from cache_policy import prepare_page
 root=Path(__file__).parent
 def asset(m):
     p=root/'assets'/m.group(1)
@@ -14,9 +15,9 @@ def render(name):
         template=template.replace('%%CONTACT_SCRIPT%%',script)
     return re.sub(r'\{\{([^}]+)\}\}',asset,template)
 html=render('portfolio.template.html')
-(root/'jen_sebastian_portfolio.html').write_text(html)
-(root/'index.html').write_text(html)
-(root/'contact.html').write_text(render('contact.template.html'))
+(root/'jen_sebastian_portfolio.html').write_text(prepare_page(html,root/'jen_sebastian_portfolio.html'))
+(root/'index.html').write_text(prepare_page(html,root/'index.html'))
+(root/'contact.html').write_text(prepare_page(render('contact.template.html'),root/'contact.html'))
 with zipfile.ZipFile(root/'Jen-Sebastian-Portfolio.zip','w',zipfile.ZIP_DEFLATED) as bundle:
     for name in ['index.html','contact.html']:bundle.write(root/name,name)
     bundle.writestr('START-HERE.txt','Open index.html in your browser. Keep contact.html in the same folder. All images, contact card, and the brand presentation are embedded. Online email delivery requires the configured backend. Until connected, visitors can use email, WhatsApp and LinkedIn or prepare an email draft. To publish, upload both HTML files to the same folder on a static website host.\n')
