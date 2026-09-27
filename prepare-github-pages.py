@@ -10,7 +10,9 @@ public = root / 'docs'
 public.mkdir(exist_ok=True)
 for name in ('index.html', 'contact.html'):
     shutil.copy2(root / name, public / name)
+if (root / 'presentations').exists():
+    shutil.copytree(root / 'presentations', public / 'presentations', dirs_exist_ok=True)
 if (root / 'CNAME').exists():
     shutil.copy2(root / 'CNAME', public / 'CNAME')
 (public / '.nojekyll').touch()
-print('Staged docs/index.html, docs/contact.html, docs/CNAME and docs/.nojekyll. No deployment performed.')
+print('Staged website, presentations, custom domain and .nojekyll in docs/. No deployment performed.')

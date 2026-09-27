@@ -1,3 +1,22 @@
+# Current website and application presentation
+
+Updated 27 September 2026. The website uses Jen’s warm glass palette, system sans-serif typography, refined controls and consistent social screenshot frames. Updated content covers brand positioning, B2B support, international account coordination and portfolio case studies.
+
+- Website: https://jenportfolio.online/
+- Contact: https://jenportfolio.online/contact.html
+- **12-slide HTML application:** https://jenportfolio.online/presentations/enigma.html
+- **Earlier 4-slide editable PowerPoint:** [Enigma_Media_Application_Glass.pptx](presentations/Enigma_Media_Application_Glass.pptx)
+
+The HTML application includes portfolio imagery, case studies, a performance chart, notes and contact links. Open it in a browser; use arrows to navigate, F for fullscreen and E for text editing. The Save control downloads a standalone HTML copy with images and edits. The expanded HTML and the earlier four-slide PowerPoint are separate versions.
+
+Run `python3 prepare-github-pages.py` after website source changes. This builds the glass theme and stages the website plus `presentations/` under `docs/`, preserving the existing custom domain. GitHub Pages continues to publish `main` / `docs`. The root copies also remain available for the existing static hosting integration.
+
+Online enquiry delivery still requires a configured email backend. Direct email, telephone, WhatsApp and LinkedIn links remain available.
+
+The material below records the earlier portfolio setup and source context.
+
+---
+
 # Jen Sebastian — Social Media Portfolio
 
 Open **index.html** or **jen_sebastian_portfolio.html** in any browser. Keep **contact.html** in the same folder for the dedicated Contact Me page. Use **Jen-Sebastian-Portfolio.zip** to share the complete two-page website. Images and downloads are embedded; no installation is needed. Email, SMS, calls and LinkedIn require an appropriate app or internet connection.

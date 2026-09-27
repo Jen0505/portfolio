@@ -7,6 +7,7 @@ def asset(m):
     return 'data:'+mime+';base64,'+base64.b64encode(p.read_bytes()).decode()
 def render(name):
     template=(root/name).read_text()
+    template=template.replace('%%SITE_THEME%%',(root/'glass.css').read_text())
     if '%%CONTACT_SCRIPT%%' in template:
         config=json.loads((root/'contact-config.json').read_text())
         script=(root/'contact.js').read_text().replace('/*CONTACT_CONFIG*/null',json.dumps(config).replace('<','\\u003c'))
